@@ -63,7 +63,7 @@ var overlay = new ol.Overlay({
 });
 
 // var iconFeature = new ol.Overlay({
-//   element = 
+//   element =
 //   geometry: new ol.geom.Point(ol.proj.transform([0, 0], 'EPSG:4326', 'EPSG:3857')),
 //   name: 'Solo',
 // });
@@ -152,11 +152,17 @@ source.onmessage = function (event) {
 
   $('#header-state').html('<b>Armed:</b> ' + msg.armed + '<br><b>Mode:</b> ' + msg.mode + '<br><b>Altitude:</b> ' + msg.alt.toFixed(2))
   $('#header-arm').prop('disabled', msg.armed);
-  
+
   overlay.setPosition(ol.proj.transform([msg.lon, msg.lat], 'EPSG:4326', 'EPSG:3857'));
   $(overlay.getElement()).find('.heading').css('-webkit-transform', 'rotate(' + ((msg.heading) + 45) + 'deg)')
 };
 
-$('#header-center').on('click', function () {
+$('#header-center-drone').on('click', function () {
   map.getView().setCenter(ol.proj.transform([globmsg.lon, globmsg.lat], 'EPSG:4326', 'EPSG:3857'));
+})
+
+$('#header-center-me').on('click', function () {
+  //navigator.geolocation.getCurrentPosition(function(position) {
+  //  map.getView().setCenter(ol.proj.transform([position.coords.longitude, position.coords.latitude], 'EPSG:4326', 'EPSG:3857'));
+  //}
 })

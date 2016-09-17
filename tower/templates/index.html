@@ -13,7 +13,7 @@
 
     <link rel="stylesheet" href="http://openlayers.org/en/v3.8.2/css/ol.css" type="text/css">
     <style>
-#header { 
+#header {
   position: absolute;
   left: 20px;
   color: white;
@@ -52,7 +52,8 @@ window.top.postMessage('gcs', '*');
       {% if branding %}
         <h1>Tower</h1>
       {% endif %}
-      <button id="header-center">Center Map</button>
+      <button id="header-center-drone">Center Map Drone</button>
+      <button id="header-center-me">Center Map Me</button>
       <p id="header-state"><b>Armed:</b> ???<br><b>Mode:</b> ??? <br><b>Altitude:</b> ???</p>
       <button id="header-arm">ARM</button>
       <button id="header-mode-loiter">Loiter</button>

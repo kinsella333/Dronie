@@ -44,7 +44,12 @@ def state_msg():
         "lon": vehicle.location.global_relative_frame.lon
     }
 
-app = Flask(__name__)
+project_root = os.path.dirname(__file__)
+template_path = os.path.join(project_root, 'templates')
+print("Project Root", project_root)
+print "Template Path", template_path
+app = Flask(__name__, template_folder=template_path)
+#app = Flask(__name__)
 
 @app.route("/")
 def home():
@@ -126,7 +131,7 @@ def connect_to_drone():
     print 'connecting to drone...'
     while not vehicle:
         try:
-            vehicle = connect(sys.argv[1], wait_ready=True, rate=10)
+            vehicle = connect(sys.argv[1], wait_ready=True, rate=10, heartbeat_timeout=0)
         except Exception as e:
             print 'waiting for connection... (%s)' % str(e)
             time.sleep(2)
@@ -151,7 +156,7 @@ t2.daemon = True
 t2.start()
 
 def main():
-    app.run(threaded=True, host='0.0.0.0', port=24403)
+    app.run(threaded=True, host='0.0.0.0', port=24403, debug=True)
 
 if __name__ == "__main__":
     main()
