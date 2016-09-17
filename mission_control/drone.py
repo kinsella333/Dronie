@@ -1,9 +1,15 @@
 from printer import Printer
 from camera import Camera
+from dronekit import connect, VehicleMode, Command
+import time
+import math
 
-
-connection_string = '127.0.0.1:14550'
+#connection_string = '127.0.0.1:14550'
+connection_string = 'tcp:ec2-52-87-238-91.compute-1.amazonaws.com:5762'
 TRIGGER_WP = 5
+
+
+debug = True
 
 # Connect to the Vehicle.
 print("Connecting to vehicle on: %s" % (connection_string,))
@@ -29,6 +35,7 @@ while True:
     while vehicle.commands.next != TRIGGER_WP:
         if last_print != vehicle.commands.next:
             print "Going to WP: {}".format(vehicle.commands.next)
+            last_print = vehicle.commands.next
         time.sleep(0.1)
     print "Arrived at client!"
 
