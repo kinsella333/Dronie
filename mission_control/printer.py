@@ -2,20 +2,6 @@ import time
 import subprocess
 import os
 
-'''
-#check save location
-if not os.path.exists(save_dir):
-    os.mkdir(save_dir)
-#save file
-filename = save_dir + post.id + ".jpg"
-img.save(filename, 'JPEG')
-#print file
-if debug:
-    img.show()
-else:
-    successful_print = send_to_printer(filename)
-'''
-
 
 
 class Printer():
