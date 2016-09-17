@@ -72,7 +72,7 @@ def tcount():
 t = Thread(target=tcount)
 t.daemon = True
 t.start()
-
+'''
 @app.route("/api/sse/state")
 def api_sse_location():
     def gen():
@@ -87,7 +87,7 @@ def api_sse_location():
             listeners_location.remove(q)
 
     return Response(gen(), mimetype="text/event-stream")
-
+'''
 # @app.route("/api/location", methods=['GET', 'POST', 'PUT'])
 # def api_location():
 #     if request.method == 'POST' or request.method == 'PUT':
@@ -102,7 +102,7 @@ def api_sse_location():
 #     else:
 #         return jsonify(**location_msg())
 
-
+'''
 @app.route("/api/arm", methods=['POST', 'PUT'])
 def api_location():
     if request.method == 'POST' or request.method == 'PUT':
@@ -113,13 +113,14 @@ def api_location():
         except Exception as e:
             print(e)
             return jsonify(ok=False)
-
-@app.route("/api/mode", methods=['POST', 'PUT'])
+'''
+@app.route("/api/location", methods=['POST', 'PUT'])
 def api_mode():
     if request.method == 'POST' or request.method == 'PUT':
         try:
-            vehicle.mode = VehicleMode(request.json['mode'].upper())
-            vehicle.flush()
+            lat = request.json['lat']
+            lon = request.json['lon']
+            ##dd.dispatch(lat,lon,100)
             return jsonify(ok=True)
         except Exception as e:
             print(e)

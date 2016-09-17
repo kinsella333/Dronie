@@ -26,6 +26,7 @@ var map = new ol.Map({
   })
 });
 
+
 // Create an image layer
 var FUDGE = 0.0005;
 var OFFSETX = 0.0001;
@@ -61,6 +62,45 @@ var overlay = new ol.Overlay({
     position: ol.proj.transform([0, 0], 'EPSG:4326', 'EPSG:3857'),
     positioning: 'center-center'
 });
+
+var mapVectorSource = new ol.source.Vector({
+    features: []
+});
+var mapVectorLayer = new ol.layer.Vector({
+    source: mapVectorSource
+});
+map.addLayer(mapVectorLayer);
+
+function makeMovable(feature) {
+    var modify = new ol.interaction.Modify({
+        features: new ol.Collection([feature])
+    });
+
+    feature.on('change',function() {
+        console.log('Feature Moved To:' + this.getGeometry().getCoordinates());
+    }, feature);
+    return modify;
+}
+
+iconStyle = new ol.style.Style({
+    image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+        anchor: [0.5, 0.67],
+        anchorXUnits: 'fraction',
+        anchorYUnits: 'fraction',
+        src: 'http://www.clipartbest.com/cliparts/dTr/ena/dTrenagpc.png',
+        scale : 0.35,
+    }))
+});
+var iconGeometry = new ol.geom.Point([-122.3020636,37.8732388]);
+var iconFeature = new ol.Feature({
+    geometry: iconGeometry
+});
+
+iconFeature.setStyle(iconStyle);
+//var marker = createMarker(ol.proj.transform([-122.3020636,37.8732388], 'EPSG:4326', 'EPSG:3857'), iconStyle);
+mapVectorSource.addFeature(iconFeature);
+var modifyInteraction = makeMovable(iconFeature);
+map.addInteraction(modifyInteraction);
 
 // var iconFeature = new ol.Overlay({
 //   element =
@@ -101,7 +141,7 @@ map.addOverlay(overlay);
 //     console.log('sent data')
 //   });
 // });
-
+/*
 $('#header-arm').on('click', function () {
   $.ajax({
     method: 'PUT',
@@ -137,8 +177,9 @@ $('#header-mode-stabilize').on('click', function () {
     console.log('sent mode change')
   });
 })
-
+*/
 var globmsg = null;
+var position = null;
 
 var source = new EventSource('/api/sse/state');
 source.onmessage = function (event) {
@@ -150,8 +191,8 @@ source.onmessage = function (event) {
   }
   globmsg = msg;
 
-  $('#header-state').html('<b>Armed:</b> ' + msg.armed + '<br><b>Mode:</b> ' + msg.mode + '<br><b>Altitude:</b> ' + msg.alt.toFixed(2))
-  $('#header-arm').prop('disabled', msg.armed);
+  $('#header-state').html(/*'<b>Armed:</b> ' + msg.armed + '<br><b>Mode:</b> ' + msg.mode + */'<br><b>Altitude:</b> ' + msg.alt.toFixed(2))
+  //$('#header-arm').prop('disabled', msg.armed);
 
   overlay.setPosition(ol.proj.transform([msg.lon, msg.lat], 'EPSG:4326', 'EPSG:3857'));
   $(overlay.getElement()).find('.heading').css('-webkit-transform', 'rotate(' + ((msg.heading) + 45) + 'deg)')
@@ -161,8 +202,21 @@ $('#header-center-drone').on('click', function () {
   map.getView().setCenter(ol.proj.transform([globmsg.lon, globmsg.lat], 'EPSG:4326', 'EPSG:3857'));
 })
 
-$('#header-center-me').on('click', function () {
-  //navigator.geolocation.getCurrentPosition(function(position) {
-  //  map.getView().setCenter(ol.proj.transform([position.coords.longitude, position.coords.latitude], 'EPSG:4326', 'EPSG:3857'));
-  //}
+map.on('singleclick', function (evt) {
+       iconGeometry.setCoordinates(evt.coordinate);
+   });
+
+$('#header-request-dronie').on('click', function () {
+  var coord = iconGeometry.getCoordinates()
+  var lat = coord[0]
+  var lon = coord[1]
+        $.ajax({
+          method: 'PUT',
+          url: '/api/location',
+          contentType : 'application/json',
+          data: JSON.stringify({ lat: lat, lon: lon }),
+        })
+        .done(function( msg ) {
+          console.log('sent selfie coords')
+        });
 })
