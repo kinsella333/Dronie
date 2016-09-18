@@ -102,30 +102,6 @@ mapVectorSource.addFeature(iconFeature);
 var modifyInteraction = makeMovable(iconFeature);
 map.addInteraction(modifyInteraction);
 
-// var iconFeature = new ol.Overlay({
-//   element =
-//   geometry: new ol.geom.Point(ol.proj.transform([0, 0], 'EPSG:4326', 'EPSG:3857')),
-//   name: 'Solo',
-// });
-
-// iconFeature.setStyle(new ol.style.Style({
-//   image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
-//     anchor: [0.5, 46],
-//     anchorXUnits: 'fraction',
-//     anchorYUnits: 'pixels',
-//     opacity: 1,
-//     src: 'static/images/solo.png',
-//     scale: .15,
-//   }))
-// }));
-
-// var vectorLayer = new ol.layer.Vector({
-//   source: new ol.source.Vector({
-//     features: [ iconFeature ]
-//   }),
-// });
-
-// map.addLayer(vectorLayer)
 
 map.addOverlay(overlay);
 

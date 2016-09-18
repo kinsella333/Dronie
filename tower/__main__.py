@@ -16,9 +16,10 @@ from subprocess import Popen
 from flask import render_template
 from flask import Flask, Response
 from datetime import datetime
+from dronedispatch import DroneDispatch
 
 vehicle = None
-
+dd = None
 # Allow us to reuse sockets after the are bound.
 # http://stackoverflow.com/questions/25535975/release-python-flask-port-when-script-is-terminated
 socket.socket._bind = socket.socket.bind
@@ -72,7 +73,7 @@ def tcount():
 t = Thread(target=tcount)
 t.daemon = True
 t.start()
-'''
+
 @app.route("/api/sse/state")
 def api_sse_location():
     def gen():
@@ -87,7 +88,7 @@ def api_sse_location():
             listeners_location.remove(q)
 
     return Response(gen(), mimetype="text/event-stream")
-'''
+
 # @app.route("/api/location", methods=['GET', 'POST', 'PUT'])
 # def api_location():
 #     if request.method == 'POST' or request.method == 'PUT':
@@ -116,11 +117,12 @@ def api_location():
 '''
 @app.route("/api/location", methods=['POST', 'PUT'])
 def api_mode():
+    print "we got a request!!!!"
     if request.method == 'POST' or request.method == 'PUT':
         try:
-            lat = request.json['lat']
-            lon = request.json['lon']
-            ##dd.dispatch(lat,lon,100)
+            data = request.get_json()
+            (lat, lon) = (float(data['lat']), float(data['lon']))
+            dd.dispatch(lat,lon,5)
             return jsonify(ok=True)
         except Exception as e:
             print(e)
@@ -128,17 +130,18 @@ def api_mode():
 
 def connect_to_drone():
     global vehicle
-
+    global dd
     print 'connecting to drone...'
     while not vehicle:
         try:
-            vehicle = connect(sys.argv[1], wait_ready=True, rate=10, heartbeat_timeout=0)
+            vehicle = connect(sys.argv[1], wait_ready=["armed","mode",'gps_0','attitude'], rate=10, heartbeat_timeout=0)
+            dd = DroneDispatch(vehicle, 15)
         except Exception as e:
             print 'waiting for connection... (%s)' % str(e)
             time.sleep(2)
 
     # if --sim is enabled...
-    vehicle.parameters['ARMING_CHECK'] = 0
+    #vehicle.parameters['ARMING_CHECK'] = 0
     vehicle.flush()
 
     print 'connected!'
