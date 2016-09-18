@@ -9,7 +9,7 @@ connection_string = 'tcp:ec2-52-87-238-91.compute-1.amazonaws.com:5762'
 TRIGGER_WP = 5
 
 
-debug = True
+debug = False
 
 # Connect to the Vehicle.
 print("Connecting to vehicle on: %s" % (connection_string,))
@@ -53,8 +53,11 @@ while True:
 
 
     #wait for disarm before processing next client
+    last_print = 0
     while vehicle.armed:
-        print "Waiting for vehicle to disarm before processing next client"
+        if last_print != vehicle.commands.next:
+            print "Going home, current WP: {}".format(vehicle.commands.next)
+            last_print = vehicle.commands.next
 
     camera.stop()
     time.sleep(2)
